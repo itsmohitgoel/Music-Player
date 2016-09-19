@@ -4,12 +4,14 @@
 
     <item
         android:id="@+id/action_shuffle"
+        android:icon="@drawable/rand"
         android:orderInCategory="100"
         app:showAsAction="always"
         android:title="Shuffle"/>
 
     <item
         android:id="@+id/action_end"
+        android:icon="@drawable/end"
         android:orderInCategory="101"
         app:showAsAction="always"
         android:title="End"/>

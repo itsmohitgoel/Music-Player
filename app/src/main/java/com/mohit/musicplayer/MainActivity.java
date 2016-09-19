@@ -1,31 +1,45 @@
 package com.mohit.musicplayer;
 
-import android.content.Intent;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Toast;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
+    private ArrayList<Song> mSongList;
+    private ListView mSongsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         setContentView(R.layout.activity_main);
+        mSongsView = (ListView) findViewById(R.id.listview_songs);
+        mSongList = new ArrayList<Song>();
         super.onCreate(savedInstanceState);
-
+        makeSongsList();
     }
 
-    public void playMusic(View view) {
-        Intent serviceIntent = new Intent(this, MusicService.class);
-        startService(serviceIntent);
-        Toast.makeText(this, "Playing Music", Toast.LENGTH_SHORT).show();
-    }
+    private void makeSongsList() {
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
-    public void stopMusic(View view) {
-        Intent serviceIntent = new Intent(this, MusicService.class);
-        stopService(serviceIntent);
-        Toast.makeText(this, "Stopping Music", Toast.LENGTH_SHORT).show();
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            //get column indices
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+
+            do {
+                long songId = musicCursor.getLong(idColumn);
+                String songTitle = musicCursor.getString(titleColumn);
+                String songArtist = musicCursor.getString(artistColumn);
+                mSongList.add(new Song(songId, songTitle, songArtist));
+            } while (musicCursor.moveToNext());
+        }
     }
 }
