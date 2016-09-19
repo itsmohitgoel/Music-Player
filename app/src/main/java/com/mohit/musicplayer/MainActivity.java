@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Song> mSongList;
@@ -21,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
         mSongList = new ArrayList<Song>();
         super.onCreate(savedInstanceState);
         makeSongsList();
+
+        Collections.sort(mSongList, new SongComparator());
+        SongAdapter  adapter = new SongAdapter(this, mSongList);
+        mSongsView.setAdapter(adapter);
     }
 
     private void makeSongsList() {
@@ -40,6 +46,18 @@ public class MainActivity extends AppCompatActivity {
                 String songArtist = musicCursor.getString(artistColumn);
                 mSongList.add(new Song(songId, songTitle, songArtist));
             } while (musicCursor.moveToNext());
+        }
+    }
+
+    private class SongComparator implements Comparator<Song> {
+
+        @Override
+        public int compare(Song lhs, Song rhs) {
+            String title1 = lhs.getSongTitle();
+            String title2 = rhs.getSongTitle();
+
+            int result = title1.compareTo(title2);
+            return result;
         }
     }
 }
