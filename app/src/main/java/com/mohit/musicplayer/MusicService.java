@@ -1,15 +1,19 @@
 package com.mohit.musicplayer;
 
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -80,6 +84,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    public void playMusic(){
+        mMediaPlayer.reset();
+        Song playSong = mSongs.get(mSongPosition);
+        long currentSongID = playSong.getSongID();
+        Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, currentSongID);
 
+        try {
+            mMediaPlayer.setDataSource(getApplicationContext(),trackUri);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "error setting datasource", e);
+        }
+        mMediaPlayer.prepareAsync();
+    }
 
 }
