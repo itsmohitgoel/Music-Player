@@ -1,12 +1,19 @@
 package com.mohit.musicplayer;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
+
+import com.mohit.musicplayer.MusicService.MusicBinder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +22,9 @@ import java.util.Comparator;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<Song> mSongList;
     private ListView mSongsView;
+    private MusicService mMusicService;
+    private Intent mPlayIntent;
+    private boolean mIsServiceBound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +37,17 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(mSongList, new SongComparator());
         SongAdapter  adapter = new SongAdapter(this, mSongList);
         mSongsView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mPlayIntent == null) {
+            mPlayIntent = new Intent(this, MusicService.class);
+            MusicConnection musicConnection = new MusicConnection();
+            bindService(mPlayIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(mPlayIntent);
+        }
     }
 
     private void makeSongsList() {
@@ -60,4 +81,20 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
     }
+
+    //To bind the service, ServiceConnection instance is needed
+    private class MusicConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicBinder myBinder = (MusicBinder) service;
+            mMusicService = myBinder.getService();
+            mMusicService.setSongsList(mSongList);
+            mIsServiceBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mIsServiceBound = false;
+        }
+    };
 }
