@@ -13,6 +13,7 @@ import java.util.ArrayList;
  * Created by Mohit on 20-09-2016.
  */
 public class SongAdapter extends BaseAdapter {
+    private static final String LOG_TAG = SongAdapter.class.getSimpleName();
     private final Context mContext;
     private final ArrayList<Song> mSongsList;
 
@@ -35,12 +36,13 @@ public class SongAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView != null) {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag(R.id.TAG_KEY_HOLDER);
         } else {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_song, parent, false);
             holder = new ViewHolder(convertView);
-            convertView.setTag(holder);
+            convertView.setTag(R.id.TAG_KEY_HOLDER,holder);
         }
+        convertView.setTag(R.id.TAG_KEY_POSITION,position);
 
         Song currentSong = mSongsList.get(position);
         holder.tvTitle.setText(currentSong.getSongTitle());

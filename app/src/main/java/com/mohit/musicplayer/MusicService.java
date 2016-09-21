@@ -74,7 +74,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-
+        mp.start();
     }
 
     // Binder class for interaction to service from activity
@@ -98,4 +98,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mMediaPlayer.prepareAsync();
     }
 
+    public void setSong(int songIndex) {
+        mSongPosition = songIndex;
+    }
 }

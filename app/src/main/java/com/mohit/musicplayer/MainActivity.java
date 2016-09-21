@@ -11,6 +11,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
 import com.mohit.musicplayer.MusicService.MusicBinder;
@@ -68,6 +72,40 @@ public class MainActivity extends AppCompatActivity {
                 mSongList.add(new Song(songId, songTitle, songArtist));
             } while (musicCursor.moveToNext());
         }
+    }
+
+    public void songPicked(View view) {
+        mMusicService.setSong((Integer) view.getTag(R.id.TAG_KEY_POSITION));
+        mMusicService.playMusic();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_shuffle:
+                //TODO
+                break;
+            case R.id.action_end:
+                stopService(mPlayIntent);
+                mMusicService = null;
+                System.exit(0);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(mPlayIntent);
+        mMusicService = null;
+        super.onDestroy();
     }
 
     private class SongComparator implements Comparator<Song> {
