@@ -64,11 +64,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        if (mMediaPlayer.getCurrentPosition() > 0) {
+            mp.reset();
+            playNext();
+        }
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        mp.reset();
         return false;
     }
 
@@ -100,5 +104,33 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public void setSong(int songIndex) {
         mSongPosition = songIndex;
+    }
+
+    public int getPostn(){ return mMediaPlayer.getCurrentPosition();}
+
+    public int getDuration(){return  mMediaPlayer.getDuration();}
+
+    public boolean isPlaying(){return mMediaPlayer.isPlaying();}
+
+    public void pausePlayer(){mMediaPlayer.pause();}
+
+    public void seek(int postn) { mMediaPlayer.seekTo(postn); }
+
+    public void go(){mMediaPlayer.start();}
+
+    public void playPrev(){
+        mSongPosition--;
+        if (mSongPosition < 0) {
+            mSongPosition = mSongs.size() -1;
+        }
+        playMusic();
+    }
+
+    public void playNext(){
+        mSongPosition++;
+        if (mSongPosition >= mSongs.size()) {
+            mSongPosition = 0;
+        }
+        playMusic();
     }
 }

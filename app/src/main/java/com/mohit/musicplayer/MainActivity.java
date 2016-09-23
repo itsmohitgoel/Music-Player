@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     public void songPicked(View view) {
         mMusicService.setSong((Integer) view.getTag(R.id.TAG_KEY_POSITION));
         mMusicService.playMusic();
+        mController.show(0);
     }
 
     @Override
@@ -134,31 +135,40 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     }
     @Override
     public void start() {
-
+        mMusicService.go();
     }
 
     @Override
     public void pause() {
-
+        mMusicService.pausePlayer();
     }
 
     @Override
     public int getDuration() {
+        if (mMusicService != null && mIsServiceBound && mMusicService.isPlaying()) {
+            return  mMusicService.getDuration();
+        }
         return 0;
     }
 
     @Override
     public int getCurrentPosition() {
+        if (mMusicService != null && mIsServiceBound && mMusicService.isPlaying()) {
+            return mMusicService.getPostn();
+        }
         return 0;
     }
 
     @Override
     public void seekTo(int pos) {
-
+        mMusicService.seek(pos);
     }
 
     @Override
     public boolean isPlaying() {
+        if (mMusicService != null && mIsServiceBound) {
+            return mMusicService.isPlaying();
+        }
         return false;
     }
 
@@ -169,17 +179,17 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public boolean canPause() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canSeekBackward() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canSeekForward() {
-        return false;
+        return true;
     }
 
     @Override
@@ -187,6 +197,17 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
         return 0;
     }
 
+    public void playPrevious(){
+        mMusicService.playPrev();
+        mController.show(0);
+    }
+
+    public void playNext() {
+        mMusicService.playNext();
+        mController.show(0);
+    }
+
+    /* * Helper Class for songs comparison * */
     private class SongComparator implements Comparator<Song> {
 
         @Override
